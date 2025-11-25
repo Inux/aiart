@@ -94,6 +94,7 @@ const initWebSocket = () => {
         const { r, g, b } = color;
         const hex = (r << 16) | (g << 8) | b;
         pixelData.mesh.material.color.setHex(hex);
+        console.log('Set color for pixel', x, y, color);
 
         receivedColors++;
         if (receivedColors % 1000 === 0 || receivedColors === pixelMeshes.length) {
