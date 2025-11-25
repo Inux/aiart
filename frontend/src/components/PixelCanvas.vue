@@ -3,8 +3,13 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import * as THREE from 'three';
 
 // Configuration
-const PIXEL_FACTOR = 10; // Pixels per virtual pixel (higher = bigger pixels)
+const PIXEL_FACTOR = 20; // Pixels per virtual pixel (higher = bigger pixels)
 const WS_URL = 'ws://localhost:3001/ws';
+
+// Generate random color
+const getRandomColor = () => {
+  return Math.floor(Math.random() * 0xffffff);
+};
 
 const canvasContainer = ref(null);
 let scene, camera, renderer, ws;
@@ -34,9 +39,10 @@ const initScene = () => {
   scene.background = new THREE.Color(0x000000);
 
   // Camera (orthographic for 2D pixel grid)
+  // OrthographicCamera(left, right, top, bottom, near, far)
   camera = new THREE.OrthographicCamera(
     0, width,
-    0, height,
+    height, 0,  // top should be larger than bottom
     0.1, 1000
   );
   camera.position.z = 10;
@@ -46,8 +52,9 @@ const initScene = () => {
   renderer.setSize(width, height);
   canvasContainer.value.appendChild(renderer.domElement);
 
-  // Create pixel grid
+  // Create pixel grid with random initial colors
   createPixelGrid(cols, rows);
+  console.log(`Initialized ${cols}x${rows} pixel grid with random colors`);
 };
 
 // Create the pixel grid
@@ -56,7 +63,7 @@ const createPixelGrid = (cols, rows) => {
 
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
-      const material = new THREE.MeshBasicMaterial({ color: 0x000000 });
+      const material = new THREE.MeshBasicMaterial({ color: getRandomColor() });
       const mesh = new THREE.Mesh(geometry, material);
 
       // Position the pixel
